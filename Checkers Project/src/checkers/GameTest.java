@@ -34,14 +34,17 @@ public class GameTest extends TestCase{
 		assertArrayEquals(expected, game.translateMoveRequestToCoordinates(moveRequest));
 	}
 	
-	@Ignore
+	@Test
 	public void testGameOver() {
-		
+		assertEquals(false, game.gameOver());
+		game.clearCheckers("Red");
+		assertEquals(true, game.gameOver());
 	}
 	
-	@Ignore
+	@Test
 	public void testDisplayGameEndingMessage() {
-		
+		game.clearCheckers("Red");
+		assertEquals("\n\nCongratulations, Black, You have won!!!", game.displayGameEndingMessage());
 	}
 	
 	@Test
@@ -61,14 +64,17 @@ public class GameTest extends TestCase{
 		assertEquals("RED make move(x1, y1, x2, y2): ", game.moveRequest());
 	}
 	
-	@Ignore
+	@Test
 	public void testCreateBoard() {
-		
+		assertEquals(8, game.board.length);
+		assertEquals(8, game.board[3].length);
 	}
 	
-	@Ignore
+	@Test
 	public void testCreateTestBoard() {
-		
+		game.createTestBoard();
+		assertEquals(0, game.redCheckersLeft());
+		assertEquals(0, game.blackCheckersLeft());
 	}
 	
 	@Ignore
@@ -76,34 +82,46 @@ public class GameTest extends TestCase{
 		
 	}
 	
-	@Ignore
+	@Test
 	public void testPlaceCheckerOnBoard() {
-		
+		Checker aChecker = new Checker(3, 3, "Red");
+		game.placeCheckerOnBoard(aChecker);
+		assertEquals(aChecker, game.board[3][3]);
 	}
 	
-	@Ignore
+	
+	
+	@Test
 	public void testPopulateCheckers() {
-		
+		assertEquals("Red", game.board[0][4].color);
+		assertEquals("Red", game.board[1][3].color);
+		assertEquals("Red", game.board[2][0].color);
+		assertEquals("Black", game.board[5][7].color);
+		assertEquals("Black", game.board[6][4].color);
+		assertEquals("Black", game.board[7][3].color);
 	}
 	
-	@Ignore
+	@Test
 	public void testRedCheckersLeft() {
-		
+		assertEquals(12, game.redCheckersLeft());
 	}
 	
-	@Ignore
+	@Test
 	public void testBlackCheckersLeft() {
-		
+		assertEquals(12, game.blackCheckersLeft());
 	}
 	
-	@Ignore
-	public void testMoveValidator() {
-		
-	}
-	
-	@Ignore
+	@Test
 	public void testKingCheckersIfNecessary() {
-		
+		game.createTestBoard();
+		Checker becomingKingChecker = new Checker(6, 2, "Red");
+		game.placeCheckerOnBoard(becomingKingChecker);
+		game.kingCheckersIfNecessary();
+		assertEquals(false, becomingKingChecker.isKing());
+		becomingKingChecker.x_pos = 7;
+		becomingKingChecker.y_pos = 1;
+		game.kingCheckersIfNecessary();
+		assertEquals(true, becomingKingChecker.isKing());
 	}
 	
 	@Ignore
@@ -141,13 +159,26 @@ public class GameTest extends TestCase{
 		
 	}
 	
-	@Ignore
+	@Test
 	public void testAttemptedJumpOfEmptySpace() {
-		
+		int[] coords = {2, 2, 4, 4};
+		game.configureCoordinates(coords);
+		assertEquals("You cannot jump an empty space", game.moveValidator());
 	}
-	@Ignore
+	
+	@Test
 	public void testAttemptedJumpOfOwnChecker() {
-		
+		game.createTestBoard();
+		Checker jumpingChecker = new Checker(3, 3, "Red");
+		Checker jumpedChecker = new Checker(4, 4, "Red");
+		game.placeCheckerOnBoard(jumpingChecker);
+		game.placeCheckerOnBoard(jumpedChecker);
+		int[] coords = {3, 3, 5, 5};
+		game.configureCoordinates(coords);
+		assertEquals("You cannot jump a checker of your own color", game.moveValidator());
+		assertEquals(null, game.board[5][5]);
+		assertEquals(jumpingChecker, game.board[3][3]);
+		assertEquals(jumpedChecker, game.board[4][4]);
 	}
 	
 	@Test
@@ -158,9 +189,20 @@ public class GameTest extends TestCase{
 	
 	
 	
-	@Ignore
+	@Test
 	public void testRemoveJumpedChecker() {
-		
+		game.createTestBoard();
+		Checker jumpingChecker = new Checker(3, 3, "Red");
+		Checker jumpedChecker = new Checker(4, 4, "Black");
+		game.placeCheckerOnBoard(jumpingChecker);
+		game.placeCheckerOnBoard(jumpedChecker);
+		assertEquals(1, game.blackCheckersLeft());
+		int[] coords = {3, 3, 5, 5};
+		game.configureCoordinates(coords);
+		assertEquals("jumping move", game.moveValidator());
+		assertEquals(jumpingChecker, game.board[5][5]);
+		assertEquals(null, game.board[4][4]);
+		assertEquals(0, game.blackCheckersLeft());	
 	}
 	
 	@Test
@@ -172,48 +214,73 @@ public class GameTest extends TestCase{
 	}
 	
 	
-	@Ignore
+	@Test
 	public void testNoCheckerAtOrigin() {
-		
+		game.currentPlayer = "Red";
+		int[] coords = {4, 4, 5, 5};
+		game.configureCoordinates(coords);
+		assertEquals("There is no checker to move in the requested location", game.moveValidator());
 	}
 	
 	
-	@Ignore
+	@Test
 	public void testTryingToMoveOpponentsChecker() {
-		
+		game.currentPlayer = "Red";
+		int[] coords = {5, 5, 4, 4};
+		game.configureCoordinates(coords);
+		assertEquals("You cannot move an opponent's checker", game.moveValidator());
 	}
 	
 	@Test
 	public void testTryingToMoveMoreThanOneSpaceAndNotJumping() {
-		game.setCoordinates(3, 3, 6, 6);
-		assertEquals(true, game.tryingToMoveMoreThanOneSpaceAndNotJumping());
-		game.setCoordinates(3, 3, 5, 5);
-		assertEquals(false, game.tryingToMoveMoreThanOneSpaceAndNotJumping());
+		int[] coords = {2, 2, 5, 5};
+		game.configureCoordinates(coords);
+		assertEquals("You cannot move more than one space if not jumping", game.moveValidator());
 	}
 	
-	@Ignore
+	@Test
 	public void testAttemptedNonDiagonalMove() {
-		
+		int[] coords = {2, 2, 3, 2};
+		game.configureCoordinates(coords);
+		assertEquals("You can only move a checker diagonally", game.moveValidator());
 	}
 	
 	
-	@Ignore
+	@Test
 	public void testAttemptedMoveToOccupiedSquare() {
-		
+		int[] coords = {1, 1, 2, 2};
+		game.configureCoordinates(coords);
+		assertEquals("You cannot move to an occupied square", game.moveValidator());
 	}
 	
-	@Ignore
+	@Test
 	public void testNonKingMovingBackwards() {
-		
+		game.createTestBoard();
+		Checker nonKing = new Checker(4, 4, "Red");
+		game.placeCheckerOnBoard(nonKing);
+		int[] coords = {4, 4, 3, 3};
+		game.configureCoordinates(coords);
+		assertEquals("A non-king checker cannot move backwards", game.moveValidator());
+		game.board[4][4].makeKing();
+		assertEquals(null, game.moveValidator());
 	}
 		
-	@Ignore
+	@Test
 	public void testMove() {
-		
+		Checker movingChecker = game.board[2][2];
+		int[] coords = {2, 2, 3, 1}; 
+		game.configureCoordinates(coords);
+		game.move();
+		assertEquals(movingChecker, game.board[3][1]);
+		assertEquals(null, game.board[2][2]);
 	}
 	
-	@Ignore
+	@Test
 	public void testSetScanValues() {
-		
+		int x = 5;
+		int y = 4;
+		game.setScanValues(x, y);
+		assertEquals(5, game.x_scan);
+		assertEquals(4, game.y_scan);
 	}
 }
