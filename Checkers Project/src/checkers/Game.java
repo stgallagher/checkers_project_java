@@ -1,6 +1,10 @@
 package checkers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Scanner;
 
 public class Game {
 
@@ -15,12 +19,43 @@ public class Game {
 	Checker[][] board = new Checker[8][8];
 	ArrayList<Checker> redCheckers = new ArrayList<Checker>();
 	ArrayList<Checker> blackCheckers = new ArrayList<Checker>();
+	BasicGui gui = new BasicGui();
 	
 	// Constructor
 	public Game(){
 		currentPlayer = "Red";
 		populateCheckers();
 	}
+	
+	
+	public void playGame() {
+		System.out.println(intro());
+		
+		while(gameOver() == false)
+		{
+			String message = null;
+			gui.renderBoard(board);
+			System.out.print(moveRequest());
+			
+			Scanner scanner = new Scanner (System.in);
+			String playerInput = scanner.nextLine();
+			int[] coordinates = new int[4]; 
+			coordinates = this.translateMoveRequestToCoordinates(playerInput);
+			this.configureCoordinates(coordinates);
+			
+			message = this.moveValidator();
+
+			System.out.println(message);
+			
+			if(message == null || (message == "jumping move" && jumpAvailable() != true))
+			{
+				this.switchPlayer();
+			}
+		}
+		gui.renderBoard(board);
+		System.out.println(this.displayGameEndingMessage());
+	}
+	
 	
 	// Set all coordinates individually
 	public void setCoordinates(int x_origin, int y_origin, int x_destination, int y_destination) {
@@ -75,6 +110,19 @@ public class Game {
 	
 	public void createTestBoard() {
 		this.clearCheckers();
+	}
+	
+	public void createDebugBoardAndPlay() {
+		this.createTestBoard();
+		Checker redChecker1 = new Checker(2, 4, "Red");
+		Checker redChecker2 = new Checker(3, 3, "Red");
+		Checker redChecker3 = new Checker(1, 1, "Red");
+		Checker blackChecker1 = new Checker(5, 3, "Black");
+		this.placeCheckerOnBoard(redChecker1);
+		this.placeCheckerOnBoard(redChecker2);
+		this.placeCheckerOnBoard(redChecker3);
+		this.placeCheckerOnBoard(blackChecker1);
+	    this.playGame();
 	}
 	
 	public void placeCheckerOnBoard(Checker aChecker) {
@@ -234,6 +282,10 @@ public class Game {
 		{
 			message = "You cannot jump a checker of your own color";
 		}
+		else if(jumpAvailableAndNotTaken() == true)
+		{
+			message = "You must jump if a jump is available";
+		}
 		else
 		{
 			move();
@@ -262,6 +314,392 @@ public class Game {
 				}
 			}
 		}
+	}
+	
+	public HashMap<String, Checker> adjacentPositions() {
+		
+		HashMap<String, Checker> jumpPositions = new HashMap<String, Checker>();
+		
+		if(currentPlayer == "Red")
+		{
+			if((x_scan  > 0 && x_scan < 7) && (y_scan  > 0 && y_scan < 7))
+			{	 
+				jumpPositions.put("upper_left",  board[x_scan + 1][y_scan + 1]);
+				jumpPositions.put("upper_right", board[x_scan + 1][y_scan - 1]);
+				jumpPositions.put("lower_left",  board[x_scan - 1][y_scan + 1]);
+				jumpPositions.put("lower_right", board[x_scan - 1][y_scan - 1]);
+			}
+			else if((x_scan  == 0) && (y_scan  > 0 && y_scan < 7))
+			{
+				jumpPositions.put("upper_left",  board[x_scan + 1][y_scan + 1]);
+				jumpPositions.put("upper_right", board[x_scan + 1][y_scan - 1]);
+				jumpPositions.put("lower_left",  null);
+				jumpPositions.put("lower_right", null);
+			}
+			else if((x_scan  == 0) && (y_scan == 7))
+			{	 
+				jumpPositions.put("upper_left",  null);
+				jumpPositions.put("upper_right", board[x_scan + 1][y_scan - 1]);
+				jumpPositions.put("lower_left",  null);
+				jumpPositions.put("lower_right", null);
+			}
+			else if((x_scan  > 0 && x_scan < 7) && (y_scan == 7))
+			{	 
+				jumpPositions.put("upper_left",  null);
+				jumpPositions.put("upper_right", board[x_scan + 1][y_scan - 1]);
+				jumpPositions.put("lower_left",  null);
+				jumpPositions.put("lower_right", board[x_scan - 1][y_scan - 1]);
+			}
+			else if((x_scan == 7) && (y_scan == 7))
+			{	 
+				jumpPositions.put("upper_left",  null);
+				jumpPositions.put("upper_right", null);
+				jumpPositions.put("lower_left",  null);
+				jumpPositions.put("lower_right", board[x_scan - 1][y_scan - 1]);
+			}
+			else if((x_scan == 7) && (y_scan  > 0 && y_scan < 7))
+			{	 
+				jumpPositions.put("upper_left",  null);
+				jumpPositions.put("upper_right", null);
+				jumpPositions.put("lower_left",  board[x_scan - 1][y_scan + 1]);
+				jumpPositions.put("lower_right", board[x_scan - 1][y_scan - 1]);
+			}
+			else if((x_scan == 7) && (y_scan == 0))
+			{	 
+				jumpPositions.put("upper_left",  null);
+				jumpPositions.put("upper_right", null);
+				jumpPositions.put("lower_left",  board[x_scan - 1][y_scan + 1]);
+				jumpPositions.put("lower_right", null);
+			}
+			else if((x_scan  > 0 && x_scan < 7) && (y_scan == 0))
+			{	 
+				jumpPositions.put("upper_left",  board[x_scan + 1][y_scan + 1]);
+				jumpPositions.put("upper_right", null);
+				jumpPositions.put("lower_left",  board[x_scan - 1][y_scan + 1]);
+				jumpPositions.put("lower_right", null);
+			}
+			else if((x_scan  == 0) && (y_scan == 0))
+			{	 
+				jumpPositions.put("upper_left",  board[x_scan + 1][y_scan + 1]);
+				jumpPositions.put("upper_right", null);
+				jumpPositions.put("lower_left",  null);
+				jumpPositions.put("lower_right", null);
+			}	
+		}
+		
+		if(currentPlayer == "Black")
+		{
+			if((x_scan  > 0 && x_scan < 7) && (y_scan  > 0 && y_scan < 7))
+			{	 
+				jumpPositions.put("upper_left",  board[x_scan - 1][y_scan - 1]);
+				jumpPositions.put("upper_right", board[x_scan - 1][y_scan + 1]);
+				jumpPositions.put("lower_left",  board[x_scan + 1][y_scan - 1]);
+				jumpPositions.put("lower_right", board[x_scan + 1][y_scan + 1]);
+			}
+			else if((x_scan  == 7) && (y_scan  > 0 && y_scan < 7))
+			{
+				jumpPositions.put("upper_left",  board[x_scan - 1][y_scan - 1]);
+				jumpPositions.put("upper_right", board[x_scan - 1][y_scan + 1]);
+				jumpPositions.put("lower_left",  null);
+				jumpPositions.put("lower_right", null);
+			}
+			else if((x_scan  == 7) && (y_scan == 0))
+			{	
+				jumpPositions.put("upper_left",  null);
+				jumpPositions.put("upper_right", board[x_scan - 1][y_scan + 1]);
+				jumpPositions.put("lower_left",  null);
+				jumpPositions.put("lower_right", null);
+			}
+			else if((x_scan  > 0 && x_scan < 7) && (y_scan == 0))
+			{
+				jumpPositions.put("upper_left",  null);
+				jumpPositions.put("upper_right", board[x_scan - 1][y_scan + 1]);
+				jumpPositions.put("lower_left",  null);
+				jumpPositions.put("lower_right", board[x_scan + 1][y_scan + 1]);
+			}
+			else if((x_scan == 0) && (y_scan == 0))
+			{	 
+				jumpPositions.put("upper_left",  null);
+				jumpPositions.put("upper_right", null);
+				jumpPositions.put("lower_left",  null);
+				jumpPositions.put("lower_right", board[x_scan + 1][y_scan + 1]);
+			}
+			else if((x_scan == 0) && (y_scan  > 0 && y_scan < 7))
+			{
+				jumpPositions.put("upper_left",  null);
+				jumpPositions.put("upper_right", null);
+				jumpPositions.put("lower_left",  board[x_scan + 1][y_scan - 1]);
+				jumpPositions.put("lower_right", board[x_scan + 1][y_scan + 1]);
+			}
+			else if((x_scan == 0) && (y_scan == 7))
+			{
+				jumpPositions.put("upper_left",  null);
+				jumpPositions.put("upper_right", null);
+				jumpPositions.put("lower_left",  board[x_scan + 1][y_scan - 1]);
+				jumpPositions.put("lower_right", null);
+			}
+			else if((x_scan  > 0 && x_scan < 7) && (y_scan == 7))
+			{
+				jumpPositions.put("upper_left",  board[x_scan - 1][y_scan - 1]);
+				jumpPositions.put("upper_right", null);
+				jumpPositions.put("lower_left",  board[x_scan + 1][y_scan - 1]);
+				jumpPositions.put("lower_right", null);
+			}
+			else if((x_scan == 7) && (y_scan == 7))
+			{
+				jumpPositions.put("upper_left",  board[x_scan - 1][y_scan - 1]);
+				jumpPositions.put("upper_right", null);
+				jumpPositions.put("lower_left",  null);
+				jumpPositions.put("lower_right", null);
+			}
+		}
+		return jumpPositions;
+	}
+	
+	public HashMap<String, Boolean> opposingCheckerAdjacent() {
+		
+		HashMap<String, Checker> adjPos = adjacentPositions();
+		
+		HashMap<String, Boolean> opposingCheckers = new HashMap<String, Boolean>();
+		
+		opposingCheckers.put("upper_left", new Boolean(false));
+		opposingCheckers.put("upper_right", new Boolean(false));
+		opposingCheckers.put("lower_left", new Boolean(false));
+		opposingCheckers.put("lower_right", new Boolean(false));
+		
+		if((adjPos.get("upper_left") != null) && (adjPos.get("upper_left").color != currentPlayer))
+		{
+			opposingCheckers.put("upper_left", true);
+		}
+		if((adjPos.get("upper_right") != null) && (adjPos.get("upper_right").color != currentPlayer))
+		{
+			opposingCheckers.put("upper_right", true);
+		}
+		if((adjPos.get("lower_left") != null) && (adjPos.get("lower_left").color != currentPlayer))
+		{
+			opposingCheckers.put("lower_left", true);
+		}
+		if((adjPos.get("lower_right") != null) && (adjPos.get("lower_right").color != currentPlayer))
+		{
+			opposingCheckers.put("lower_right", true);
+		}
+		return opposingCheckers;
+	}
+	
+	public HashMap<String, Boolean> jumpLocations() {
+		
+		boolean outsideBounds;
+		
+		HashMap<String, Boolean> oppCheck = opposingCheckerAdjacent();
+		
+		HashMap<String, Boolean> jumpLocations = new HashMap<String, Boolean>();
+		
+		jumpLocations.put("upper_left", new Boolean(false));
+		jumpLocations.put("upper_right", new Boolean(false));
+		jumpLocations.put("lower_left", new Boolean(false));
+		jumpLocations.put("lower_right", new Boolean(false));
+		
+		Checker checker = board[x_scan][y_scan];
+		
+		if(currentPlayer == "Red")
+		{
+			outsideBounds = outOfBounds(x_scan + 2, y_scan + 2);
+			
+			if((oppCheck.get("upper_left") == true) && (outsideBounds == false) && (board[x_scan + 2][y_scan + 2] == null))
+			{
+				jumpLocations.put("upper_left", true);
+			}
+		
+			outsideBounds = outOfBounds(x_scan + 2, y_scan - 2);
+		
+			if((oppCheck.get("upper_right") == true) && (outsideBounds == false) && (board[x_scan + 2][y_scan - 2] == null))
+			{
+				jumpLocations.put("upper_right", true);
+			}
+			
+			if(checker.isKing())
+			{
+				outsideBounds = outOfBounds(x_scan - 2, y_scan + 2);
+			
+				if((oppCheck.get("lower_left") == true) && (outsideBounds == false) && (board[x_scan - 2][y_scan + 2] == null))
+				{
+					jumpLocations.put("lower_left", true);
+				}
+			
+				outsideBounds = outOfBounds(x_scan - 2, y_scan - 2);
+			
+				if((oppCheck.get("lower_right") == true) && (outsideBounds == false) && (board[x_scan - 2][y_scan - 2] == null))
+				{
+					jumpLocations.put("lower_right", true);
+				}
+			}
+		}
+		
+		if(currentPlayer == "Black")
+		{
+			
+			outsideBounds = outOfBounds(x_scan - 2, y_scan - 2);
+		
+			if((oppCheck.get("upper_left") == true) && (outsideBounds == false) && (board[x_scan - 2][y_scan - 2] == null))
+			{
+				jumpLocations.put("upper_left", true);
+			}
+		
+			outsideBounds = outOfBounds(x_scan - 2, y_scan + 2);
+		
+			if((oppCheck.get("upper_right") == true) && (outsideBounds == false) && (board[x_scan - 2][y_scan + 2] == null))
+			{
+				jumpLocations.put("upper_right", true);
+			}
+			
+			if(checker.isKing())
+			{
+				outsideBounds = outOfBounds(x_scan + 2, y_scan - 2);
+			
+				if((oppCheck.get("lower_left") == true) && (outsideBounds == false) && (board[x_scan + 2][y_scan - 2] == null))
+				{
+					jumpLocations.put("lower_left", true);
+				}
+			
+				outsideBounds = outOfBounds(x_scan + 2, y_scan + 2);
+			
+				if((oppCheck.get("lower_right") == true) && (outsideBounds == false) && (board[x_scan + 2][y_scan + 2] == null))
+				{
+					jumpLocations.put("lower_right", true);
+				}
+			}
+		}
+		return jumpLocations;
+	}
+	
+	public LinkedList<int[]> jumpLocationsCoordinates() {
+		
+		HashMap<String, Boolean> jumpLoc = jumpLocations();
+		
+		LinkedList<int[]> jumpingLocations = new LinkedList<int[]>();
+		
+		if (currentPlayer == "Red")
+		{
+			if( jumpLoc.get("upper_left") == true)
+			{  
+				int[] locationCoords = {x_scan + 2, y_scan + 2};
+				jumpingLocations.add(locationCoords);
+			}
+	  
+			if( jumpLoc.get("upper_right") == true)
+			{
+				int[] locationCoords = {x_scan + 2, y_scan - 2};
+				jumpingLocations.add(locationCoords); 
+			}
+			if( jumpLoc.get("lower_left") == true)
+			{
+				int[] locationCoords = {x_scan - 2, y_scan + 2};
+				jumpingLocations.add(locationCoords);
+			}
+			if( jumpLoc.get("lower_right") == true)
+			{
+				int[] locationCoords = {x_scan - 2, y_scan - 2};
+				jumpingLocations.add(locationCoords);
+			}
+		}
+
+		if (currentPlayer == "Black")
+		{
+			if( jumpLoc.get("upper_left") == true)
+			{  
+				int[] locationCoords = {x_scan - 2, y_scan - 2};
+				jumpingLocations.add(locationCoords);
+			}
+	  
+			if( jumpLoc.get("upper_right") == true)
+			{
+				int[] locationCoords = {x_scan - 2, y_scan + 2};
+				jumpingLocations.add(locationCoords); 
+			}
+			if( jumpLoc.get("lower_left") == true)
+			{
+				int[] locationCoords = {x_scan + 2, y_scan - 2};
+				jumpingLocations.add(locationCoords);
+			}
+			if( jumpLoc.get("lower_right") == true)
+			{
+				int[] locationCoords = {x_scan + 2, y_scan + 2};
+				jumpingLocations.add(locationCoords);
+			}
+		}
+		return jumpingLocations;
+	}
+	
+	public LinkedList<LinkedList<int[]>> generateJumpLocationsCoordinatesList() {
+		
+		LinkedList<LinkedList<int[]>> coordinatesList = new LinkedList<LinkedList<int[]>>();
+		
+		for(int i = 0; i < board.length; i++)
+		{
+			for(int j = 0; j < board.length; j++)
+			{
+				if((board[i][j] != null) && (board[i][j].color == currentPlayer))
+				{					
+					x_scan = board[i][j].x_pos;
+					y_scan = board[i][j].y_pos;
+					coordinatesList.add(this.jumpLocationsCoordinates());
+				}
+			}
+		}
+		
+		return coordinatesList;
+	}
+	
+	public boolean jumpAvailable() {
+		
+		boolean available = false;
+		
+		LinkedList<LinkedList<int[]>> jumpList = generateJumpLocationsCoordinatesList();
+		
+		Iterator<LinkedList<int[]>> itr = jumpList.iterator();
+		
+		while(itr.hasNext())
+		{
+			LinkedList<int[]> next = itr.next();
+			for(int i = 0; i < next.size(); i++)
+			{
+				int[] actual = (int[])next.get(i);
+				if(actual.length > 0)
+				{
+					available = true;
+				}
+			}	
+		}
+		return available;
+	}
+	
+	public boolean jumpAvailableAndNotTaken() {
+		
+		boolean notTakenJump = true;
+		
+		LinkedList<LinkedList<int[]>> jumpPossible = generateJumpLocationsCoordinatesList();
+		
+		Iterator<LinkedList<int[]>> itr = jumpPossible.iterator();
+		
+		while(itr.hasNext())
+		{
+			LinkedList<int[]> next = itr.next();
+			for(int i = 0; i < next.size(); i++)
+			{
+				int[] actual = (int[])next.get(i);
+				
+				for(int j = 0; j < actual.length; j += 2)
+				{
+					if((x_dest == actual[j]) && (y_dest == actual[j + 1]))
+					{
+						notTakenJump = false;
+					}
+				}
+			}	
+		}
+		//System.out.println("IN JUMP AVAIL: jumplist size = " + jumpPossible.size());
+		
+		return ((jumpAvailable() == true) && (notTakenJump));
 	}
 	
 	public boolean attemptedJumpOfEmptySpace() {
@@ -309,7 +747,7 @@ public class Game {
 	}
 	
 	public boolean jumpingMove(){
-		return (x_dest - x_orig) == 2;
+		return Math.abs(x_dest - x_orig) == 2;
 	}
 	
 	public void removeJumpedChecker() {

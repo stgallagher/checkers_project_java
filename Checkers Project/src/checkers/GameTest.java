@@ -1,10 +1,14 @@
 package checkers;
 import static org.junit.Assert.*;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import junit.framework.TestCase;
 
-import org.junit.Ignore;
 import org.junit.Test;
-
 
 public class GameTest extends TestCase{
 	private Game game;
@@ -77,7 +81,7 @@ public class GameTest extends TestCase{
 		assertEquals(0, game.blackCheckersLeft());
 	}
 	
-	@Ignore
+	@Test
 	public void testCreateDebugBoardAndPlay() {
 		
 	}
@@ -124,39 +128,154 @@ public class GameTest extends TestCase{
 		assertEquals(true, becomingKingChecker.isKing());
 	}
 	
-	@Ignore
+	@Test
 	public void testAdjacentPositions() {
-		
+		game.createTestBoard();
+		Checker referenceChecker = new Checker(4, 4, "Red");
+		Checker upperLeftChecker = new Checker(5, 5, "Black");
+		Checker lowerRightChecker = new Checker(3, 3, "Black");
+		game.placeCheckerOnBoard(referenceChecker);
+		game.placeCheckerOnBoard(upperLeftChecker);
+		game.placeCheckerOnBoard(lowerRightChecker);
+		game.setScanValues(4, 4);
+		HashMap<String, Checker> ap = game.adjacentPositions();
+		assertSame(upperLeftChecker, ap.get("upper_left"));
+		assertEquals(null, ap.get("upper_right"));
+		assertEquals(null, ap.get("lower_left"));
+		assertSame(lowerRightChecker, ap.get("lower_right"));
 	}
 	
-	@Ignore
+	@Test
 	public void testOpposingCheckerAdjacent() {
-		
+		game.createTestBoard();
+		Checker referenceChecker = new Checker(4, 4, "Red");
+		Checker upperLeftChecker = new Checker(5, 5, "Black");
+		Checker lowerRightChecker = new Checker(3, 3, "Black");
+		game.placeCheckerOnBoard(referenceChecker);
+		game.placeCheckerOnBoard(upperLeftChecker);
+		game.placeCheckerOnBoard(lowerRightChecker);
+		game.setScanValues(4, 4);
+		HashMap<String, Boolean> ap = game.opposingCheckerAdjacent();
+		assertEquals(true, (boolean)ap.get("upper_left"));
+		assertEquals(false,(boolean)ap.get("upper_right"));
+		assertEquals(false,(boolean)ap.get("lower_left"));
+		assertEquals(true, (boolean)ap.get("lower_right"));
 	}
 	
-	@Ignore
+	@Test
 	public void testJumpLocations() {
-		
+		game.createTestBoard();
+		Checker referenceChecker = new Checker(4, 4, "Red");
+		Checker upperLeftChecker = new Checker(5, 5, "Black");
+		Checker upperRightChecker = new Checker(5, 3, "Black");
+		Checker blockingUpperRightChecker = new Checker(6, 2, "Black");
+		game.placeCheckerOnBoard(referenceChecker);
+		game.placeCheckerOnBoard(upperLeftChecker);
+		game.placeCheckerOnBoard(upperRightChecker);
+		game.placeCheckerOnBoard(blockingUpperRightChecker);
+		game.setScanValues(4, 4);
+		HashMap<String, Boolean> ap = game.jumpLocations();
+		assertEquals(true, (boolean)ap.get("upper_left"));
+		assertEquals(false, (boolean)ap.get("upper_right"));
+		assertEquals(false, (boolean)ap.get("lower_left"));
+		assertEquals(false, (boolean)ap.get("lower_right"));
 	}
 	
-	@Ignore
+	@Test
 	public void testJumpLocationsCoordinates() {
-		
+		game.createTestBoard();
+		Checker referenceChecker = new Checker(4, 4, "Red");
+		Checker upperLeftChecker = new Checker(5, 5, "Black");
+		Checker upperRightChecker = new Checker(5, 3, "Black");
+		game.placeCheckerOnBoard(referenceChecker);
+		game.placeCheckerOnBoard(upperLeftChecker);
+		game.placeCheckerOnBoard(upperRightChecker);
+		game.setScanValues(4, 4);
+		LinkedList<int[]> jlc = game.jumpLocationsCoordinates();
+		int[] expected1 = {6, 6};
+		int[] expected2 = {6, 2};
+		assertArrayEquals(expected1,jlc.get(0));
+		assertArrayEquals(expected2,jlc.get(1));
+		assertEquals(2, jlc.size());
 	}
 	
-	@Ignore
+	@Test
 	public void testGenerateJumpLocationsCoordinatesList() {
-		
+		game.createTestBoard();
+		Checker redChecker1 = new Checker(1, 1, "Red");
+		Checker redChecker2 = new Checker(3, 3, "Red");
+		Checker redChecker3 = new Checker(1, 7, "Red");
+		Checker blackChecker1 = new Checker(4, 2, "Black");
+		Checker blackChecker2 = new Checker(4, 4, "Black");
+		Checker blackChecker3 = new Checker(2, 6, "Black");
+		Checker blackChecker4 = new Checker(6, 6, "Black");
+		game.placeCheckerOnBoard(redChecker1);
+		game.placeCheckerOnBoard(redChecker2);
+		game.placeCheckerOnBoard(redChecker3);
+		game.placeCheckerOnBoard(blackChecker1);
+		game.placeCheckerOnBoard(blackChecker2);
+		game.placeCheckerOnBoard(blackChecker3);
+		game.placeCheckerOnBoard(blackChecker4);
+		LinkedList<LinkedList<int[]>> jlc = game.generateJumpLocationsCoordinatesList();
+		int [] expected1 = {3, 5};
+		int [] expected2 = {5, 5};
+		int [] expected3 = {5, 1};
+		boolean isExpected1There = false;
+		boolean isExpected2There = false;
+		boolean isExpected3There = false;
+		Iterator<LinkedList<int[]>> itr = jlc.iterator();
+		while(itr.hasNext())
+		{
+			LinkedList<int[]> next = itr.next();
+			for(int i = 0; i < next.size(); i++)
+			{
+				int[] actual = (int[])next.get(i);
+	
+				if(Arrays.equals(expected1, actual))
+				{
+					isExpected1There = true;
+				}
+				if(Arrays.equals(expected2, actual))
+				{
+					isExpected2There = true;
+				}
+				if(Arrays.equals(expected3, actual))
+				{
+					isExpected3There = true;
+				}
+			}	
+		}
+		assertEquals(true, isExpected1There);
+		assertEquals(true, isExpected2There);
+		assertEquals(true, isExpected3There);
 	}
 	
-	@Ignore
+	@Test
 	public void testJumpAvailable() {
-		
+		game.createTestBoard();
+		Checker redChecker = new Checker(3, 3, "Red");
+		Checker blackChecker = new Checker(4, 4, "Black");
+		game.placeCheckerOnBoard(redChecker);
+		assertEquals(false, game.jumpAvailable());
+		game.placeCheckerOnBoard(blackChecker);
+		assertEquals(true, game.jumpAvailable());
 	}
 	
-	@Ignore
+	@Test
 	public void testJumpAvailableAndNotTaken() {
-		
+		game.createTestBoard();
+		Checker redChecker1 = new Checker(1, 1, "Red");
+		Checker redChecker2 = new Checker(1, 7, "Red");
+		Checker blackChecker1 = new Checker(2, 6, "Black");
+		game.placeCheckerOnBoard(redChecker1);
+		game.placeCheckerOnBoard(redChecker2);
+		game.placeCheckerOnBoard(blackChecker1);
+		int[] coords1 = {1, 1, 2, 2};
+		game.configureCoordinates(coords1);
+		assertEquals(true, game.jumpAvailableAndNotTaken());
+		int[] coords2 = {1, 7, 3, 5};
+		game.configureCoordinates(coords2);
+		assertEquals(false, game.jumpAvailableAndNotTaken());
 	}
 	
 	@Test
