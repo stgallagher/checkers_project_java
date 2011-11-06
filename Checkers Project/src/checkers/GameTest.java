@@ -282,7 +282,7 @@ public class GameTest extends TestCase{
 	public void testAttemptedJumpOfEmptySpace() {
 		int[] coords = {2, 2, 4, 4};
 		game.configureCoordinates(coords);
-		assertEquals("You cannot jump an empty space", game.moveValidator());
+		assertEquals("You cannot jump an empty space", game.moveValidator(game.x_orig, game.y_orig, game.x_dest, game.y_dest ));
 	}
 	
 	@Test
@@ -294,7 +294,7 @@ public class GameTest extends TestCase{
 		game.placeCheckerOnBoard(jumpedChecker);
 		int[] coords = {3, 3, 5, 5};
 		game.configureCoordinates(coords);
-		assertEquals("You cannot jump a checker of your own color", game.moveValidator());
+		assertEquals("You cannot jump a checker of your own color", game.moveValidator(game.x_orig, game.y_orig, game.x_dest, game.y_dest ));
 		assertEquals(null, game.board[5][5]);
 		assertEquals(jumpingChecker, game.board[3][3]);
 		assertEquals(jumpedChecker, game.board[4][4]);
@@ -318,7 +318,7 @@ public class GameTest extends TestCase{
 		assertEquals(1, game.blackCheckersLeft());
 		int[] coords = {3, 3, 5, 5};
 		game.configureCoordinates(coords);
-		assertEquals("jumping move", game.moveValidator());
+		assertEquals("jumping move", game.moveValidator(game.x_orig, game.y_orig, game.x_dest, game.y_dest ));
 		assertEquals(jumpingChecker, game.board[5][5]);
 		assertEquals(null, game.board[4][4]);
 		assertEquals(0, game.blackCheckersLeft());	
@@ -338,7 +338,7 @@ public class GameTest extends TestCase{
 		game.currentPlayer = "Red";
 		int[] coords = {4, 4, 5, 5};
 		game.configureCoordinates(coords);
-		assertEquals("There is no checker to move in the requested location", game.moveValidator());
+		assertEquals("There is no checker to move in the requested location", game.moveValidator(game.x_orig, game.y_orig, game.x_dest, game.y_dest ));
 	}
 	
 	
@@ -347,21 +347,21 @@ public class GameTest extends TestCase{
 		game.currentPlayer = "Red";
 		int[] coords = {5, 5, 4, 4};
 		game.configureCoordinates(coords);
-		assertEquals("You cannot move an opponent's checker", game.moveValidator());
+		assertEquals("You cannot move an opponent's checker", game.moveValidator(game.x_orig, game.y_orig, game.x_dest, game.y_dest ));
 	}
 	
 	@Test
 	public void testTryingToMoveMoreThanOneSpaceAndNotJumping() {
 		int[] coords = {2, 2, 5, 5};
 		game.configureCoordinates(coords);
-		assertEquals("You cannot move more than one space if not jumping", game.moveValidator());
+		assertEquals("You cannot move more than one space if not jumping", game.moveValidator(game.x_orig, game.y_orig, game.x_dest, game.y_dest ));
 	}
 	
 	@Test
 	public void testAttemptedNonDiagonalMove() {
 		int[] coords = {2, 2, 3, 2};
 		game.configureCoordinates(coords);
-		assertEquals("You can only move a checker diagonally", game.moveValidator());
+		assertEquals("You can only move a checker diagonally", game.moveValidator(game.x_orig, game.y_orig, game.x_dest, game.y_dest ));
 	}
 	
 	
@@ -369,7 +369,7 @@ public class GameTest extends TestCase{
 	public void testAttemptedMoveToOccupiedSquare() {
 		int[] coords = {1, 1, 2, 2};
 		game.configureCoordinates(coords);
-		assertEquals("You cannot move to an occupied square", game.moveValidator());
+		assertEquals("You cannot move to an occupied square", game.moveValidator(game.x_orig, game.y_orig, game.x_dest, game.y_dest ));
 	}
 	
 	@Test
@@ -379,9 +379,9 @@ public class GameTest extends TestCase{
 		game.placeCheckerOnBoard(nonKing);
 		int[] coords = {4, 4, 3, 3};
 		game.configureCoordinates(coords);
-		assertEquals("A non-king checker cannot move backwards", game.moveValidator());
+		assertEquals("A non-king checker cannot move backwards", game.moveValidator(game.x_orig, game.y_orig, game.x_dest, game.y_dest ));
 		game.board[4][4].makeKing();
-		assertEquals(null, game.moveValidator());
+		assertEquals(null, game.moveValidator(game.x_orig, game.y_orig, game.x_dest, game.y_dest ));
 	}
 		
 	@Test

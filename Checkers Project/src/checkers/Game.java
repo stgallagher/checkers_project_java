@@ -43,7 +43,7 @@ public class Game {
 			coordinates = this.translateMoveRequestToCoordinates(playerInput);
 			this.configureCoordinates(coordinates);
 			
-			message = this.moveValidator();
+			message = this.moveValidator(x_orig, y_orig, x_dest, y_dest);
 
 			System.out.println(message);
 			
@@ -243,7 +243,12 @@ public class Game {
 		return blackCount;
 	}
 	
-	public String moveValidator() {
+	public String moveValidator(int x_origin, int y_origin, int x_destination, int y_destination) {
+		x_orig = x_origin;
+		y_orig = y_origin;
+		x_dest = x_destination;
+		y_dest = y_destination;
+		
 		String message = null;
 		
 		if(outOfBounds(x_dest, x_orig) == true)
