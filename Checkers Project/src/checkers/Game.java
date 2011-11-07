@@ -46,11 +46,6 @@ public class Game {
 			message = this.moveValidator(x_orig, y_orig, x_dest, y_dest);
 
 			System.out.println(message);
-			
-			if(message == null || (message == "jumping move" && jumpAvailable() != true))
-			{
-				this.switchPlayer();
-			}
 		}
 		gui.renderBoard(board);
 		System.out.println(this.displayGameEndingMessage());
@@ -300,6 +295,11 @@ public class Game {
 				removeJumpedChecker();
 			}
 			kingCheckersIfNecessary();
+		}
+		
+		if(message == null || (message == "jumping move" && jumpAvailable() != true))
+		{
+			this.switchPlayer();
 		}
 		return message;
 	}
