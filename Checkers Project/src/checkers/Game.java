@@ -533,14 +533,14 @@ public class Game {
 		{
 			outsideBounds = outOfBounds(x_scan + 2, y_scan + 2);
 			
-			if((oppCheck.get("upper_left") == true) && (outsideBounds == false) && (board[x_scan + 2][y_scan + 2] == null))
+			if((oppCheck.get("upper_left").equals(true)) && (outsideBounds == false) && (board[x_scan + 2][y_scan + 2] == null))
 			{
 				jumpLocations.put("upper_left", true);
 			}
 		
 			outsideBounds = outOfBounds(x_scan + 2, y_scan - 2);
 		
-			if((oppCheck.get("upper_right") == true) && (outsideBounds == false) && (board[x_scan + 2][y_scan - 2] == null))
+			if((oppCheck.get("upper_right").equals(true)) && (outsideBounds == false) && (board[x_scan + 2][y_scan - 2] == null))
 			{
 				jumpLocations.put("upper_right", true);
 			}
@@ -549,14 +549,14 @@ public class Game {
 			{
 				outsideBounds = outOfBounds(x_scan - 2, y_scan + 2);
 			
-				if((oppCheck.get("lower_left") == true) && (outsideBounds == false) && (board[x_scan - 2][y_scan + 2] == null))
+				if((oppCheck.get("lower_left").equals(true)) && (outsideBounds == false) && (board[x_scan - 2][y_scan + 2] == null))
 				{
 					jumpLocations.put("lower_left", true);
 				}
 			
 				outsideBounds = outOfBounds(x_scan - 2, y_scan - 2);
 			
-				if((oppCheck.get("lower_right") == true) && (outsideBounds == false) && (board[x_scan - 2][y_scan - 2] == null))
+				if((oppCheck.get("lower_right").equals(true)) && (outsideBounds == false) && (board[x_scan - 2][y_scan - 2] == null))
 				{
 					jumpLocations.put("lower_right", true);
 				}
@@ -568,14 +568,14 @@ public class Game {
 			
 			outsideBounds = outOfBounds(x_scan - 2, y_scan - 2);
 		
-			if((oppCheck.get("upper_left") == true) && (outsideBounds == false) && (board[x_scan - 2][y_scan - 2] == null))
+			if((oppCheck.get("upper_left").equals(true)) && (outsideBounds == false) && (board[x_scan - 2][y_scan - 2] == null))
 			{
 				jumpLocations.put("upper_left", true);
 			}
 		
 			outsideBounds = outOfBounds(x_scan - 2, y_scan + 2);
 		
-			if((oppCheck.get("upper_right") == true) && (outsideBounds == false) && (board[x_scan - 2][y_scan + 2] == null))
+			if((oppCheck.get("upper_right").equals(true)) && (outsideBounds == false) && (board[x_scan - 2][y_scan + 2] == null))
 			{
 				jumpLocations.put("upper_right", true);
 			}
@@ -584,14 +584,14 @@ public class Game {
 			{
 				outsideBounds = outOfBounds(x_scan + 2, y_scan - 2);
 			
-				if((oppCheck.get("lower_left") == true) && (outsideBounds == false) && (board[x_scan + 2][y_scan - 2] == null))
+				if((oppCheck.get("lower_left").equals(true)) && (outsideBounds == false) && (board[x_scan + 2][y_scan - 2] == null))
 				{
 					jumpLocations.put("lower_left", true);
 				}
 			
 				outsideBounds = outOfBounds(x_scan + 2, y_scan + 2);
 			
-				if((oppCheck.get("lower_right") == true) && (outsideBounds == false) && (board[x_scan + 2][y_scan + 2] == null))
+				if((oppCheck.get("lower_right").equals(true)) && (outsideBounds == false) && (board[x_scan + 2][y_scan + 2] == null))
 				{
 					jumpLocations.put("lower_right", true);
 				}
@@ -608,23 +608,23 @@ public class Game {
 		
 		if (currentPlayer == "Red")
 		{
-			if( jumpLoc.get("upper_left") == true)
+			if( jumpLoc.get("upper_left").equals(true))
 			{  
 				int[] locationCoords = {x_scan + 2, y_scan + 2};
 				jumpingLocations.add(locationCoords);
 			}
 	  
-			if( jumpLoc.get("upper_right") == true)
+			if( jumpLoc.get("upper_right").equals(true))
 			{
 				int[] locationCoords = {x_scan + 2, y_scan - 2};
 				jumpingLocations.add(locationCoords); 
 			}
-			if( jumpLoc.get("lower_left") == true)
+			if( jumpLoc.get("lower_left").equals(true))
 			{
 				int[] locationCoords = {x_scan - 2, y_scan + 2};
 				jumpingLocations.add(locationCoords);
 			}
-			if( jumpLoc.get("lower_right") == true)
+			if( jumpLoc.get("lower_right").equals(true))
 			{
 				int[] locationCoords = {x_scan - 2, y_scan - 2};
 				jumpingLocations.add(locationCoords);
@@ -633,23 +633,23 @@ public class Game {
 
 		if (currentPlayer == "Black")
 		{
-			if( jumpLoc.get("upper_left") == true)
+			if( jumpLoc.get("upper_left").equals(true))
 			{  
 				int[] locationCoords = {x_scan - 2, y_scan - 2};
 				jumpingLocations.add(locationCoords);
 			}
 	  
-			if( jumpLoc.get("upper_right") == true)
+			if( jumpLoc.get("upper_right").equals(true))
 			{
 				int[] locationCoords = {x_scan - 2, y_scan + 2};
 				jumpingLocations.add(locationCoords); 
 			}
-			if( jumpLoc.get("lower_left") == true)
+			if( jumpLoc.get("lower_left").equals(true))
 			{
 				int[] locationCoords = {x_scan + 2, y_scan - 2};
 				jumpingLocations.add(locationCoords);
 			}
-			if( jumpLoc.get("lower_right") == true)
+			if( jumpLoc.get("lower_right").equals(true))
 			{
 				int[] locationCoords = {x_scan + 2, y_scan + 2};
 				jumpingLocations.add(locationCoords);
@@ -778,14 +778,17 @@ public class Game {
 		return Math.abs(x_dest - x_orig) == 2;
 	}
 	
-	public void removeJumpedChecker() {
+	public String removeJumpedChecker() {
 		int x_delta = (x_dest > x_orig) ? 1 : -1;
 		int y_delta = (y_dest > y_orig) ? 1 : -1;
 		
 		int removeCheckerXvalue = x_orig + x_delta;
 		int removeCheckerYvalue = y_orig + y_delta;
 		
+		String removedCheckerType = (board[removeCheckerXvalue][removeCheckerYvalue].isKing()) ? "King" : "Standard";
 		board[removeCheckerXvalue][removeCheckerYvalue] = null;
+		
+		return removedCheckerType;
 	}
 	
 	public boolean outOfBounds(int x, int y) {

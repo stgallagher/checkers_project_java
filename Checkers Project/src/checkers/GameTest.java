@@ -385,6 +385,24 @@ public class GameTest extends TestCase{
 	}
 	
 	@Test
+	public void testRemovedCheckerDescriptor() {
+		game.createTestBoard();
+		Checker jumpingChecker = new Checker(3, 3, "Red");
+		Checker jumpedChecker = new Checker(4, 4, "Black");
+		Checker jumpedKingChecker = new Checker(6, 6, "Black");
+		jumpedKingChecker.makeKing();
+		game.placeCheckerOnBoard(jumpingChecker);
+		game.placeCheckerOnBoard(jumpedChecker);
+		game.placeCheckerOnBoard(jumpedKingChecker);
+		int[] coords = {3, 3, 5, 5};
+		game.configureCoordinates(coords);
+		assertEquals("Standard", game.removeJumpedChecker());
+		int[] coords2 = {5, 5, 7, 7};
+		game.configureCoordinates(coords2);
+		assertEquals("King", game.removeJumpedChecker());
+	}
+	
+	@Test
 	public void testOutOfBounds() {
 		assertEquals(false, game.outOfBounds(4, 4));
 		assertEquals(true,  game.outOfBounds(-2, 4));
