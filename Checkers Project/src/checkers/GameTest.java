@@ -116,6 +116,20 @@ public class GameTest extends TestCase{
 	}
 	
 	@Test
+	public void testMovesCheckerAndSwitchesPlayer() {
+		game.createTestBoard();
+		Checker redChecker = new Checker(1, 1, "Red");
+		Checker blackChecker = new Checker(5, 5, "Black");
+		game.placeCheckerOnBoard(redChecker);
+		game.placeCheckerOnBoard(blackChecker);
+		assertEquals("Red", game.currentPlayer);
+		assertEquals("You can only move a checker diagonally", game.moveValidator(1, 1, 2, 1));
+		assertEquals("Red", game.currentPlayer);
+		assertEquals(null, game.moveValidator(1, 1, 2, 2));
+		assertEquals("Black", game.currentPlayer);
+	}
+	
+	@Test
 	public void testAnyMoreJumpsForThisChecker() {
 		game.createTestBoard();
 		Checker redChecker = new Checker(1, 1, "Red");

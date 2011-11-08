@@ -12,5 +12,4 @@ public class AllTests {
 		//$JUnit-END$
 		return suite;
 	}
-
 }

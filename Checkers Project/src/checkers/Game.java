@@ -313,7 +313,7 @@ public class Game {
 			kingCheckersIfNecessary();
 		}
 		
-		if(consecutiveJumps == false)
+		if((consecutiveJumps == false) && (message == null || message == "jumping move"))
 		{
 			this.switchPlayer();
 		}
