@@ -116,6 +116,52 @@ public class GameTest extends TestCase{
 	}
 	
 	@Test
+	public void testAnyMoreJumpsForThisChecker() {
+		game.createTestBoard();
+		Checker redChecker = new Checker(1, 1, "Red");
+		Checker blackChecker1 = new Checker(2, 2, "Black");
+		Checker blackChecker2 = new Checker(4, 2, "Black");
+		Checker blackChecker3 = new Checker(6, 2, "Black");
+		game.placeCheckerOnBoard(redChecker);
+		game.placeCheckerOnBoard(blackChecker1);
+		game.placeCheckerOnBoard(blackChecker2);
+		game.placeCheckerOnBoard(blackChecker3);
+		game.moveValidator(1, 1, 3, 3);
+		assertEquals(true, game.anyMoreJumpsForThisChecker());
+		game.moveValidator(3, 3, 5, 1);
+		assertEquals(true, game.anyMoreJumpsForThisChecker());
+		game.moveValidator(5, 1, 7, 3);
+		assertEquals(false, game.anyMoreJumpsForThisChecker());
+	}
+	
+	@Test
+	public void testOnlyLetsConsecutiveJumpingCheckerJump() {
+		game.createTestBoard();
+		Checker redChecker1 = new Checker(1, 1, "Red");
+		Checker redChecker2 = new Checker(0, 6, "Red");
+		Checker blackChecker1 = new Checker(2, 2, "Black");
+		Checker blackChecker2 = new Checker(4, 2, "Black");
+		Checker blackChecker3 = new Checker(1, 5, "Black");
+		game.placeCheckerOnBoard(redChecker1);
+		game.placeCheckerOnBoard(redChecker2);
+		game.placeCheckerOnBoard(blackChecker1);
+		game.placeCheckerOnBoard(blackChecker2);
+		game.placeCheckerOnBoard(blackChecker3);
+		
+		game.moveValidator(1, 1, 3, 3);
+		assertEquals(true, game.consecutiveJumps);
+		assertEquals("Red", game.currentPlayer);
+		assertEquals("When consecutive jumping, you must jump with the same checker", game.moveValidator(0, 6, 2, 4));
+		assertEquals("Red", game.currentPlayer);
+		
+		game.moveValidator(3, 3, 5, 1);
+		assertEquals(false, game.consecutiveJumps);
+		assertEquals(false, game.anyMoreJumpsForThisChecker());
+		assertEquals(true, game.jumpingMove());
+		assertEquals("Black", game.currentPlayer);
+	}
+	
+	@Test
 	public void testKingCheckersIfNecessary() {
 		game.createTestBoard();
 		Checker becomingKingChecker = new Checker(6, 2, "Red");
@@ -381,6 +427,7 @@ public class GameTest extends TestCase{
 		game.configureCoordinates(coords);
 		assertEquals("A non-king checker cannot move backwards", game.moveValidator(game.x_orig, game.y_orig, game.x_dest, game.y_dest ));
 		game.board[4][4].makeKing();
+		game.currentPlayer = "Red";
 		assertEquals(null, game.moveValidator(game.x_orig, game.y_orig, game.x_dest, game.y_dest ));
 	}
 		

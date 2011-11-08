@@ -16,10 +16,14 @@ public class Game {
 	int y_scan;
 	
 	String currentPlayer;
+	
 	Checker[][] board = new Checker[8][8];
 	ArrayList<Checker> redCheckers = new ArrayList<Checker>();
 	ArrayList<Checker> blackCheckers = new ArrayList<Checker>();
 	BasicGui gui = new BasicGui();
+	
+	boolean consecutiveJumps = false;
+	Checker consecutiveJumper = null;
 	
 	// Constructor
 	public Game(){
@@ -246,6 +250,10 @@ public class Game {
 		
 		String message = null;
 		
+		if(consecutiveJumps == true && board[x_orig][y_orig] != consecutiveJumper)
+		{
+			return message = "When consecutive jumping, you must jump with the same checker";
+		}
 		if(outOfBounds(x_dest, x_orig) == true)
 		{
 			message = "You cannot move off the board";
@@ -289,19 +297,34 @@ public class Game {
 		else
 		{
 			move();
+			
 			if(jumpingMove() == true)
 			{
 				message = "jumping move";
 				removeJumpedChecker();
+				consecutiveJumps = false;
+				
+				if(anyMoreJumpsForThisChecker() == true)
+				{
+					consecutiveJumps = true;
+					consecutiveJumper = board[x_dest][y_dest];
+				}
 			}
 			kingCheckersIfNecessary();
 		}
 		
-		if(message == null || (message == "jumping move" && jumpAvailable() != true))
+		if(consecutiveJumps == false)
 		{
 			this.switchPlayer();
 		}
 		return message;
+	}
+	
+	public boolean anyMoreJumpsForThisChecker() {
+		
+		this.setScanValues(x_dest, y_dest);
+		HashMap<String, Boolean> jlc = this.jumpLocations();
+		return (jlc.containsValue(true)) ? true : false;
 	}
 	
 	public void kingCheckersIfNecessary() {
@@ -522,7 +545,7 @@ public class Game {
 				jumpLocations.put("upper_right", true);
 			}
 			
-			if(checker.isKing())
+			if(checker != null && checker.isKing())
 			{
 				outsideBounds = outOfBounds(x_scan - 2, y_scan + 2);
 			
@@ -557,7 +580,7 @@ public class Game {
 				jumpLocations.put("upper_right", true);
 			}
 			
-			if(checker.isKing())
+			if(checker != null && checker.isKing())
 			{
 				outsideBounds = outOfBounds(x_scan + 2, y_scan - 2);
 			
