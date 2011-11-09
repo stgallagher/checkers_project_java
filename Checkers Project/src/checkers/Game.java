@@ -300,8 +300,7 @@ public class Game {
 			
 			if(jumpingMove() == true)
 			{
-				message = "jumping move";
-				removeJumpedChecker();
+				message = removeJumpedChecker();
 				consecutiveJumps = false;
 				
 				if(anyMoreJumpsForThisChecker() == true)
@@ -313,7 +312,7 @@ public class Game {
 			kingCheckersIfNecessary();
 		}
 		
-		if((consecutiveJumps == false) && (message == null || message == "jumping move"))
+		if((consecutiveJumps == false) && (message == null || message == "Standard" || message == "King"))
 		{
 			this.switchPlayer();
 		}

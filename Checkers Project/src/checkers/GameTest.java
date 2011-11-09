@@ -378,7 +378,7 @@ public class GameTest extends TestCase{
 		assertEquals(1, game.blackCheckersLeft());
 		int[] coords = {3, 3, 5, 5};
 		game.configureCoordinates(coords);
-		assertEquals("jumping move", game.moveValidator(game.x_orig, game.y_orig, game.x_dest, game.y_dest ));
+		assertEquals("Standard", game.moveValidator(game.x_orig, game.y_orig, game.x_dest, game.y_dest ));
 		assertEquals(jumpingChecker, game.board[5][5]);
 		assertEquals(null, game.board[4][4]);
 		assertEquals(0, game.blackCheckersLeft());	
