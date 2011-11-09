@@ -85,7 +85,12 @@ public class Game {
 	}
 	
 	public boolean gameOver() {
-		return ((redCheckersLeft() == 0) || (blackCheckersLeft() == 0));
+		boolean gameIsOver = ((redCheckersLeft() == 0) || (blackCheckersLeft() == 0));
+		if(gameIsOver)
+		{
+			displayGameEndingMessage();
+		}
+		return gameIsOver;
 	}
 	
 	public String displayGameEndingMessage() {
